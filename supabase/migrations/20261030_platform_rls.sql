@@ -41,9 +41,9 @@ create policy "posts readable" on public.posts for select using(pet_id is null o
 create policy "posts insert by author" on public.posts for insert with check(author_id=(select auth.uid()) and (pet_id is null or public.owns_pet(pet_id)));
 create policy "posts update by author" on public.posts for update using(author_id=(select auth.uid())) with check(author_id=(select auth.uid()) and (pet_id is null or public.owns_pet(pet_id)));
 create policy "posts delete by author" on public.posts for delete using(author_id=(select auth.uid()));
-create policy "comments readable" on public.comments for select using(true);
-create policy "comments insert by author" on public.comments for insert with check(author_id=(select auth.uid()));
-create policy "comments update by author" on public.comments for update using(author_id=(select auth.uid())) with check(author_id=(select auth.uid()));
+create policy "comments readable" on public.comments for select using(exists(select 1 from public.posts p where p.id=post_id));
+create policy "comments insert by author" on public.comments for insert with check(author_id=(select auth.uid()) and exists(select 1 from public.posts p where p.id=post_id));
+create policy "comments update by author" on public.comments for update using(author_id=(select auth.uid())) with check(author_id=(select auth.uid()) and exists(select 1 from public.posts p where p.id=post_id));
 create policy "comments delete by author" on public.comments for delete using(author_id=(select auth.uid()));
 create policy "follows readable" on public.follows for select using(true);
 create policy "follows insert by follower" on public.follows for insert with check(follower_id=(select auth.uid()));
