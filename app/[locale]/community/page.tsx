@@ -2,7 +2,7 @@
 import {useEffect,useState} from "react";
 import {createClient, type SupabaseClient} from "@supabase/supabase-js";
 import {useParams} from "next/navigation";
-type Item={id:string;name?:string;species?:string;title?:string;body?:string;created_at?:string};
+type Item={id:string;name?:string;species?:string;title?:string;body?:string;description?:string;created_at?:string};
 export default function CommunityPage(){
  const p=useParams(),locale=p.locale==="hy"?"hy":p.locale==="ru"?"ru":"en";
  const tx={hy:["Իմ կենդանիները","Կենդանու անուն","Տեսակ","Ավելացնել կենդանի","Հրապարակումներ","Ի՞նչ նորություն կա","Հրապարակել","Հայտարարություններ","Վերնագիր","Նկարագրություն","Տեղադրել հայտարարություն","Մուտք գործեք՝ հրապարակելու համար","Սխալ՝ ","Համայնք"],en:["My pets","Pet name","Species","Add pet","Posts","What's new?","Publish","Listings","Title","Description","Post listing","Sign in to post","Error: ","Community"],ru:["Мои питомцы","Имя","Вид","Добавить питомца","Публикации","Что нового?","Опубликовать","Объявления","Название","Описание","Разместить","Войдите для публикации","Ошибка: ","Сообщество"]}[locale];
@@ -14,5 +14,5 @@ export default function CommunityPage(){
  return <main style={{maxWidth:850,margin:"3rem auto",padding:24}}><a href={"/"+locale}>← PetBook Pro</a><h1>{tx[13]}</h1>{!uid&&<p><a href={"/"+locale+"/auth"}>{tx[11]}</a></p>}{notice&&<p role="alert">{notice}</p>}
  <section><h2>{tx[0]}</h2>{uid&&<form onSubmit={e=>{e.preventDefault();void add("pets",{name:petName,species})}}><input style={field} required maxLength={120} placeholder={tx[1]} value={petName} onChange={e=>setPetName(e.target.value)}/><input style={field} required placeholder={tx[2]} value={species} onChange={e=>setSpecies(e.target.value)}/><button>{tx[3]}</button></form>}<ul>{pets.map(x=><li key={x.id}>{x.name} — {x.species}</li>)}</ul></section>
  <section><h2>{tx[4]}</h2>{uid&&<form onSubmit={e=>{e.preventDefault();void add("posts",{body:post})}}><textarea style={field} required maxLength={5000} placeholder={tx[5]} value={post} onChange={e=>setPost(e.target.value)}/><button>{tx[6]}</button></form>}<ul>{posts.map(x=><li key={x.id}>{x.body}</li>)}</ul></section>
- <section><h2>{tx[7]}</h2>{uid&&<form onSubmit={e=>{e.preventDefault();void add("listings",{title,description,category:"other"})}}><input style={field} required placeholder={tx[8]} value={title} onChange={e=>setTitle(e.target.value)}/><textarea style={field} required placeholder={tx[9]} value={description} onChange={e=>setDescription(e.target.value)}/><button>{tx[10]}</button></form>}<ul>{listings.map(x=><li key={x.id}><strong>{x.title}</strong> — {x.body}</li>)}</ul></section></main>
+ <section><h2>{tx[7]}</h2>{uid&&<form onSubmit={e=>{e.preventDefault();void add("listings",{title,description,category:"other"})}}><input style={field} required placeholder={tx[8]} value={title} onChange={e=>setTitle(e.target.value)}/><textarea style={field} required placeholder={tx[9]} value={description} onChange={e=>setDescription(e.target.value)}/><button>{tx[10]}</button></form>}<ul>{listings.map(x=><li key={x.id}><strong>{x.title}</strong> — {x.description}</li>)}</ul></section></main>
 }
