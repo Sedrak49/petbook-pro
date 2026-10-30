@@ -18,7 +18,7 @@ create policy "profile owner updates" on public.profiles for update using(id=(se
 create or replace function public.protect_profile_role() returns trigger language plpgsql security definer set search_path=public as $$
 begin
  if new.role is distinct from old.role then
-   if current_user <> 'postgres' and (select auth.role()) <> 'service_role' then
+   if (select auth.role()) is distinct from 'service_role' then
      raise exception 'Role changes require administrator service';
    end if;
  end if;
@@ -29,7 +29,7 @@ create policy "pets readable if public or owner" on public.pets for select using
 create policy "pets insert by owner" on public.pets for insert with check(owner_id=(select auth.uid()));
 create policy "pets update by owner" on public.pets for update using(owner_id=(select auth.uid())) with check(owner_id=(select auth.uid()));
 create policy "pets delete by owner" on public.pets for delete using(owner_id=(select auth.uid()));
-create policy "pedigree readable" on public.pet_relations for select using(public.owns_pet(pet_id) or exists(select 1 from public.pets p where p.id=pet_id and p.visibility='public'));
+create policy "pedigree readable" on public.pet_relations for select using((public.owns_pet(pet_id) or exists(select 1 from public.pets p where p.id=pet_id and p.visibility='public')) and (public.owns_pet(parent_id) or exists(select 1 from public.pets p where p.id=parent_id and p.visibility='public')));
 create policy "pedigree insert by owner" on public.pet_relations for insert with check(public.owns_pet(pet_id));
 create policy "pedigree update by owner" on public.pet_relations for update using(public.owns_pet(pet_id)) with check(public.owns_pet(pet_id));
 create policy "pedigree delete by owner" on public.pet_relations for delete using(public.owns_pet(pet_id));
@@ -37,7 +37,7 @@ create policy "health private to owner" on public.health_records for select usin
 create policy "health insert by owner" on public.health_records for insert with check(public.owns_pet(pet_id));
 create policy "health update by owner" on public.health_records for update using(public.owns_pet(pet_id)) with check(public.owns_pet(pet_id));
 create policy "health delete by owner" on public.health_records for delete using(public.owns_pet(pet_id));
-create policy "posts readable" on public.posts for select using(true);
+create policy "posts readable" on public.posts for select using(pet_id is null or exists(select 1 from public.pets p where p.id=pet_id and (p.visibility='public' or p.owner_id=(select auth.uid()))));
 create policy "posts insert by author" on public.posts for insert with check(author_id=(select auth.uid()) and (pet_id is null or public.owns_pet(pet_id)));
 create policy "posts update by author" on public.posts for update using(author_id=(select auth.uid())) with check(author_id=(select auth.uid()) and (pet_id is null or public.owns_pet(pet_id)));
 create policy "posts delete by author" on public.posts for delete using(author_id=(select auth.uid()));
