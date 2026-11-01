@@ -3,7 +3,7 @@ import {useEffect,useState} from "react";
 import {createClient, type SupabaseClient} from "@supabase/supabase-js";
 import {useParams} from "next/navigation";
 
-const SUPABASE_PROJECT_URL = "https://shxsdpabbznsweolbzk.supabase.co";
+const SUPABASE_PROJECT_URL = "https://snxsdpabpznsvveolbzk.supabase.co";
 
 const words={
 en:{heading:"Your PetBook account",signup:"Create account",login:"Sign in",email:"Email",password:"Password",submit:"Continue",check:"Check your email to confirm your account.",logout:"Sign out",signed:"Signed in as",missing:"Authentication is not configured. Contact the site administrator.",short:"Password must be at least 8 characters.",forgot:"Send password reset email",reset:"If this email is registered, check your inbox for a reset link.",newPassword:"Set a new password",savePassword:"Save new password",updated:"Your password has been updated."},
